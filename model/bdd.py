@@ -1,6 +1,7 @@
 """Represents the database"""
 
 from tinydb import TinyDB, Query
+import config
 
 
 class DB:
@@ -8,4 +9,4 @@ class DB:
 
     def __init__(self):
         """Init class with attributes."""
-        self.db = TinyDB("DB.json")
+        self.db = TinyDB(config.DB_PATH)

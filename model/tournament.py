@@ -1,7 +1,6 @@
 """Represents the tournament"""
 
 import datetime
-from .player import Player
 from tinydb import TinyDB, Query
 
 
@@ -18,13 +17,13 @@ class Tournament:
     ):
         """Init class with attributes."""
         self.id = None
-        self.name = None
-        self.location = None
+        self.name = name
+        self.location = location
         self.turns = 4
         self.players = []
-        self.start_date = None
-        self.ending_date = None
-        self.desc = None
+        self.start_date = start_date
+        self.ending_date = ending_date
+        self.desc = desc
 
     def save():
         # Si l'id est vide sauvegarder l'objet puis lui attribuer un ID
