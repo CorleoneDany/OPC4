@@ -16,16 +16,17 @@ class Tournament:
         desc,
     ):
         """Init class with attributes."""
-        self.id = None
+        self.id = int
         self.name = name
         self.location = location
         self.turns = 4
         self.players = []
+        self.matchs = []
         self.start_date = start_date
         self.ending_date = ending_date
         self.desc = desc
 
-    def save():
+    def save(self):
         # Si l'id est vide sauvegarder l'objet puis lui attribuer un ID
         # Sinon s'il existe déjà juste mettre à jour l'objet sauvegardé en bdd
         pass
