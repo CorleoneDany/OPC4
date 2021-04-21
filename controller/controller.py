@@ -2,7 +2,18 @@
 
 from model import DB, Player, Match, Tournament
 
-from view import Base, MainMenu, CreateTournamentView, RetrieveTournamentView
+from view import (
+    MotherView,
+    MainMenu,
+    CreateTournamentView,
+    RetrieveTournamentView,
+    CreatePlayerView,
+    CreatedPlayerView,
+    CreateMatchView,
+    ShowMatches,
+    ChooseMatch,
+    InputMatchWinner,
+)
 
 
 class Controller:
@@ -18,12 +29,12 @@ class Controller:
         while self.running:
             self.view.display()
 
-    def update(self, choice):
-        if choice == "create_tournament":
+    def update(self, command):
+        if command == "create_tournament":
             self.view = CreateTournamentView(self)
-        elif choice == "retrieve_tournament":
+        elif command == "retrieve_tournament":
             self.view = RetrieveTournamentView(self)
-        elif choice == "wrong_command":
+        elif command == "wrong_command":
             self.view.wrong_command()
 
     def display_menu(self):
@@ -77,6 +88,3 @@ class Controller:
 
     def next_turn(self):
         pass
-
-    def run(self):
-        self.display_menu()

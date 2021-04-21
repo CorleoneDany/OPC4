@@ -34,9 +34,10 @@ class MainMenu(MotherView):
         choice = input("Entrez le numéro de l'option choisie : ")
         if choice == "1":
             command = "create_tournament"
-        if choice == "2":
+        elif choice == "2":
             command = "retrieve_tournament"
-        command = "wrong_command"
+        else:
+            command = "wrong_command"
         self.notify(command)
 
 
@@ -67,7 +68,7 @@ class CreateTournamentView(MotherView):
 
 class RetrieveTournamentView(MotherView):
     def display(self):
-        pass
+        print("Option en cours de développement.")
 
 
 class CreatePlayerView(MotherView):
