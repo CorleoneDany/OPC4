@@ -1,6 +1,7 @@
 """Represents the player"""
 
 import datetime
+from tinydb import TinyDB, Query
 
 
 class Player:

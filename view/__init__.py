@@ -5,10 +5,10 @@ from .base import (
     MainMenu,
     CreateTournamentView,
     RetrieveTournamentView,
-    CreatePlayerView,
-    CreatedPlayerView,
+    CreatePlayersView,
     CreateMatchView,
     ShowMatches,
     ChooseMatch,
     InputMatchWinner,
+    PlayerMenuView,
 )

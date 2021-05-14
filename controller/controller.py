@@ -7,12 +7,12 @@ from view import (
     MainMenu,
     CreateTournamentView,
     RetrieveTournamentView,
-    CreatePlayerView,
-    CreatedPlayerView,
+    CreatePlayersView,
     CreateMatchView,
     ShowMatches,
     ChooseMatch,
     InputMatchWinner,
+    PlayerMenuView,
 )
 
 
@@ -21,56 +21,43 @@ class Controller:
 
     def __init__(self):
         """Init class with attributes."""
-        self.view = MainMenu(self)
+        self.view = MainMenu(observer=self)
         self.running = True
         self.context = {}
+        self.tournament = None
 
     def run(self):
         while self.running:
             self.view.display()
 
-    def update(self, command):
-        if command == "create_tournament":
-            self.view = CreateTournamentView(self)
-        elif command == "retrieve_tournament":
-            self.view = RetrieveTournamentView(self)
-        elif command == "wrong_command":
+    def execute(self, command):
+        name = command["name"]
+        if name == "create_tournament":
+            self.view = CreateTournamentView(observer=self)
+            self.create_tournament()
+        elif name == "retrieve_tournament":
+            self.view = RetrieveTournamentView(observer=self)
+        elif name == "main_page":
+            self.view = MainMenu(observer=self)
+        elif name == "player_menu":
+            self.view = PlayerMenuView(observer=self)
+        elif name == "ask_player_creation":
+            self.view = CreatePlayersView(observer=self)
+        elif name == "create_player":
+            for players_needed in range(8):
+                data = self.context[f"player{players_needed}"]
+                player = Player(**data)
+                self.tournament.players.append(player)
+        elif name == "create_matchs":
+            self.view = CreateMatchView(observer=self)
+        elif name == "wrong_command":
             self.view.wrong_command()
 
-    def display_menu(self):
-        choice = self.view.display()
-        if choice == 1:
-            self.create_tournament()
-            self.create_player_lists()
-            player_list = self.return_player_list()
-            self.create_first_matchs(**player_list)
-        elif choice == 2:
-            print("Fonction en cours de dev")
-
-        self.view.display_all_matches(self.tournament.matchs)
-        self.choose_match()
-
-    def display_matches(self):
-        self.view.display_matches(self.tournament.matchs)
-        self.view.choose_match()
-
     def create_tournament(self):
-        data = self.view.ask_tournament_data()
+        self.view.display()
+        data = self.context["tournament_data"]
         self.tournament = Tournament(**data)
         print("Tournoi créé avec succès.")
-        self.create_player_list()
-
-    def create_player_list(self, number_of_players=8):
-        for number in range(number_of_players):
-            self.tournament.players.append(self.view.ask_player_data())
-            self.view.display_last_player_created(self.tournament.players)
-
-    def return_player_list(self):
-        sorted_players = sorted(self.tournament.players, key=lambda i: i["ranking"])
-        return {
-            "high_ranks": sorted_players(range(0, 3)),
-            "low_ranks": sorted_players(range(4, 7)),
-        }
 
     def create_first_matchs(self, high_ranks, low_ranks):
         for match_ups in range(4):
