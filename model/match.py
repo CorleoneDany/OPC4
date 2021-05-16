@@ -11,6 +11,13 @@ class Match:
         self.player_2 = player_2
         self.winner_alias = ""
 
+    def serialized(self):
+        return {
+            "player_1": self.player_1,
+            "player_2": self.player_2,
+            "winner_alias": self.winner_alias,
+    }
+
     def save(self):
         pass
 

@@ -20,6 +20,17 @@ class Player:
         self.rank = rank
         self.score = int
 
+    def serialized(self):
+        return {
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "alias": self.alias,
+            "date_of_birth": self.date_of_birth,      
+            "sex": self.sex,
+            "rank": self.rank,
+            "score": self.score,
+    }
+
     def save(self):
         pass
 

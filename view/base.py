@@ -138,11 +138,16 @@ class CreatePlayersView(MotherView):
 
 
 class CreateMatchView(MotherView):
+    def __init__(self, observer, matches):
+        super().__init__(observer)
+        self.matches = matches
+
     def display(self):
-        print(
-            f"Le match n°{self.match.match_id} opposant {match.player_1.alias}"
-            f" et {match.player_2.alias} vient d'être créé."
-        )
+        for match in self.matches:
+            print(
+                f"Le match n°{self.match.match_id} opposant {match.player_1.alias}"
+                f" et {match.player_2.alias} à été créé."
+            )
 
 
 class ShowMatches(MotherView):
@@ -158,7 +163,7 @@ class ShowMatches(MotherView):
             )
 
 
-class ChooseMatch(MotherView):
+class ChooseMatchView(MotherView):
     def display(self):
         print(
             "Choisissez le chiffre du match à modifier, "

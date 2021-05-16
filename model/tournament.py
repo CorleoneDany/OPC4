@@ -27,6 +27,18 @@ class Tournament:
         self.ending_date = ending_date
         self.desc = desc
 
+    def serialized(self):
+        return {
+            "name": self.name,
+            "location": self.location,
+            "turns": self.turns,
+            "players": self.players,      
+            "rounds": self.rounds,
+            "start_date": self.start_date,
+            "ending_date": self.ending_date,
+            "desc": self.desc
+    }    
+
     def save(self):
         # Si l'id est vide sauvegarder l'objet puis lui attribuer un ID
         # Sinon s'il existe déjà juste mettre à jour l'objet sauvegardé en bdd

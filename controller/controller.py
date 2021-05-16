@@ -10,7 +10,7 @@ from view import (
     CreatePlayersView,
     CreateMatchView,
     ShowMatches,
-    ChooseMatch,
+    ChooseMatchView,
     InputMatchWinner,
     PlayerMenuView,
 )
@@ -49,7 +49,10 @@ class Controller:
                 player = Player(**data)
                 self.tournament.players.append(player)
         elif name == "create_matchs":
-            self.view = CreateMatchView(observer=self)
+            self.tournament.create_first_rounds()
+            self.view = CreateMatchView(observer=self, matches=self.tournament.rounds)
+        elif name == "select_match":
+            self.view = ChooseMatchView(observer=self)
         elif name == "wrong_command":
             self.view.wrong_command()
 

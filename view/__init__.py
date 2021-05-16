@@ -8,7 +8,7 @@ from .base import (
     CreatePlayersView,
     CreateMatchView,
     ShowMatches,
-    ChooseMatch,
+    ChooseMatchView,
     InputMatchWinner,
     PlayerMenuView,
 )
