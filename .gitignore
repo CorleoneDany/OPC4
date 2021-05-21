@@ -2,3 +2,5 @@
 __*
 !__init__.py
 !.gitignore
+.vscode
+.venv

@@ -1,12 +1,18 @@
 """Represents the tournament"""
 
 import datetime
-from .match import Match
+
 from tinydb import TinyDB, Query
 
+from .bdd import DB
+from .match import Match
+from src import config
 
-class Tournament:
+
+class Tournament(DB):
     """Represents the tournament"""
+
+    table = TinyDB(config.DB_PATH).table("tournament")
 
     def __init__(
         self,
@@ -32,20 +38,18 @@ class Tournament:
             "name": self.name,
             "location": self.location,
             "turns": self.turns,
-            "players": self.players,      
+            "players": self.players,
             "rounds": self.rounds,
             "start_date": self.start_date,
             "ending_date": self.ending_date,
-            "desc": self.desc
-    }    
+            "desc": self.desc,
+        }
 
-    def save(self):
-        # Si l'id est vide sauvegarder l'objet puis lui attribuer un ID
-        # Sinon s'il existe déjà juste mettre à jour l'objet sauvegardé en bdd
-        pass
-
-    def get(self):
-        pass
+    @classmethod
+    def deserialized(self, document):
+        tournament = Tournament(**document)
+        tournament.doc_id = document.doc_id
+        return tournament
 
     def create_first_rounds(self):
         sorted_players = sorted(self.players, key=lambda i: i["ranking"])

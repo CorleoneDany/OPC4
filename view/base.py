@@ -164,23 +164,39 @@ class ShowMatches(MotherView):
 
 
 class ChooseMatchView(MotherView):
+    def __init__(self, observer, matches):
+        super().__init__(observer)
+        self.matches = matches
+
     def display(self):
+        print("Voici les matchs qu'il vous est possible de sélectionner : ")
+        for id, match in enumerate(self.matches):
+            print(f"Match n°{id} : {match.alias}")
         print(
             "Choisissez le chiffre du match à modifier, "
             "si vous voulez passer au prochain matchup n'entrez aucune valeur : "
         )
-        self.get_choice()
+        choice = self.get_choice()
+        self.set_context("chosen_match", self.matches[choice])
+        self.update("modify_match")
+
+    def get_choice(self):
+        return int(input())
 
 
-class InputMatchWinner(MotherView):
+class ModifyMatchView(MotherView):
     def __init__(self, observer, match):
         super().__init__(observer)
         self.match = match
 
     def display(self):
         print(
-            f"Rentrez le gagnant, Joueur 1 ({self.match.player_1.alias}) ou Joueur 2"
-            f" ({self.match.player_2.alias}) par son chiffre, dans le cas d'un match"
-            " nul laisser la valeur à vide : "
+            f"Vous avez sélectionné le match {self.match.alias}, nous vous invitons à "
+            f"renseigner le vainqueur de ce dernier, Joueur 1 "
+            f"({self.match.player_1.alias}) ou Joueur 2 ({self.match.player_2.alias})"
+            "par son chiffre, dans le cas d'un match nul laisser la valeur à vide : \n"
         )
-        self.get_choice()
+        self.set_context("chosen_winner", self.get_choice())
+
+    def get_choice(self):
+        return int(input())

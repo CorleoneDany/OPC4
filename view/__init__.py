@@ -9,6 +9,6 @@ from .base import (
     CreateMatchView,
     ShowMatches,
     ChooseMatchView,
-    InputMatchWinner,
+    ModifyMatchView,
     PlayerMenuView,
 )

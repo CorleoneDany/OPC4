@@ -1,8 +1,8 @@
 """Reprents the controller."""
 
-from model import DB, Player, Match, Tournament
+from src.model import Player, Match, Tournament
 
-from view import (
+from src.view import (
     MotherView,
     MainMenu,
     CreateTournamentView,
@@ -11,7 +11,7 @@ from view import (
     CreateMatchView,
     ShowMatches,
     ChooseMatchView,
-    InputMatchWinner,
+    ModifyMatchView,
     PlayerMenuView,
 )
 
@@ -52,20 +52,15 @@ class Controller:
             self.tournament.create_first_rounds()
             self.view = CreateMatchView(observer=self, matches=self.tournament.rounds)
         elif name == "select_match":
-            self.view = ChooseMatchView(observer=self)
+            self.view = ChooseMatchView(observer=self, matches=self.tournament.rounds)
+        elif name == "modify_match":
+            self.view = ModifyMatchView(
+                observer=self, match=self.context["chosen_match"]
+            )
+            self.update_score(self.match, self.context["chosen_winner"])
+            self.context["chosen_winner"] = None
         elif name == "wrong_command":
             self.view.wrong_command()
-
-    def create_tournament(self):
-        self.view.display()
-        data = self.context["tournament_data"]
-        self.tournament = Tournament(**data)
-        print("Tournoi créé avec succès.")
-
-    def create_first_matchs(self, high_ranks, low_ranks):
-        for match_ups in range(4):
-            self.tournament.matchs.append(high_ranks, low_ranks)
-            self.view.display_created_match(self.tournament.matchs)
 
     def update_score(self, match, choice):
         if choice == 1:
@@ -77,4 +72,8 @@ class Controller:
             match.player_2.score += 0.5
 
     def next_turn(self):
-        pass
+        for match in self.tournament.matches:
+            if self.tournament.matches.winner_alias:
+                pass
+            else:
+                self.view = ChooseMatchView(observer=self)
