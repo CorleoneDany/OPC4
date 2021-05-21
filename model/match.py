@@ -5,7 +5,7 @@ from tinydb import TinyDB, Query
 
 from .bdd import DB
 from .player import Player
-from src import config
+import config
 
 
 class Match(DB):

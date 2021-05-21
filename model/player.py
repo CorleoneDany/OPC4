@@ -5,7 +5,7 @@ import datetime
 from tinydb import TinyDB, Query
 
 from .bdd import DB
-from src import config
+import config
 
 
 class Player(DB):

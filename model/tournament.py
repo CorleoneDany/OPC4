@@ -6,7 +6,7 @@ from tinydb import TinyDB, Query
 
 from .bdd import DB
 from .match import Match
-from src import config
+import config
 
 
 class Tournament(DB):

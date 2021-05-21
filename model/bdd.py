@@ -1,7 +1,7 @@
 """Represents the database"""
 
 from tinydb import TinyDB, Query
-from src import config
+import config
 
 
 class DB:

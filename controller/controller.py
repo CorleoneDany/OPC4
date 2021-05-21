@@ -1,8 +1,8 @@
 """Reprents the controller."""
 
-from src.model import Player, Match, Tournament
+from model import Player, Match, Tournament
 
-from src.view import (
+from view import (
     MotherView,
     MainMenu,
     CreateTournamentView,
