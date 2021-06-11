@@ -33,7 +33,7 @@ class Match(DB):
         }
 
     @classmethod
-    def deserialized(self, document):
+    def deserialized(cls, document):
         match = Match(**document)
         match.doc_id = document.doc_id
         return match

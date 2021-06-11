@@ -2,7 +2,7 @@
 
 import datetime
 
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, Query, table
 
 from .bdd import DB
 import config
@@ -13,9 +13,7 @@ class Player(DB):
 
     table = TinyDB(config.DB_PATH).table("players")
 
-    def __init__(
-        self, first_name, last_name, date_of_birth: datetime.date, sex: int, rank
-    ):
+    def __init__(self, first_name, last_name, date_of_birth: datetime.date, sex, rank):
         """Init class with attributes."""
         self.player_id = int
         self.first_name = first_name
@@ -24,6 +22,7 @@ class Player(DB):
         self.sex = sex
         self.rank = rank
         self.score = int
+        self.players_faced = []
 
     @property
     def alias(self):
@@ -41,7 +40,18 @@ class Player(DB):
         }
 
     @classmethod
-    def deserialized(self, document):
+    def deserialized(cls, document):
         player = Player(**document)
         player.doc_id = document.doc_id
         return player
+
+    @classmethod
+    def create_players(cls, context, tournament):
+        for index in range(8):
+            data = context[f"player{index}"]
+            player = Player(**data)
+            tournament.players.append(player)
+
+    @classmethod
+    def list_all_players(cls):
+        return table.all()

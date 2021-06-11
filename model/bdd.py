@@ -24,3 +24,10 @@ class DB:
     @classmethod
     def deserialized(self):
         pass
+
+    def save(self):
+        document = self.serialized()
+        if self.doc_id:
+            self.table.update(document, doc_ids=[self.doc_id])
+        else:
+            self.doc_id = self.table.insert(document)

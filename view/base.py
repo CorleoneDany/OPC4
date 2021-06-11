@@ -55,10 +55,11 @@ class MainMenu(MotherView):
 
 class CreateTournamentView(MotherView):
     def display(self):
+        # demander la création ou le chargement des joueurs via la liste en bdd
         print("Entrez les informations du tournoi ci dessous : ")
         tournament_data = self.get_tournament_data()
         self.set_context("tournament_data", tournament_data)
-        self.update({"name": "ask_player_creation"})
+        self.update({"name": "player_menu"})
 
     def get_tournament_data(self):
         return {
@@ -90,10 +91,14 @@ class RetrieveTournamentView(MotherView):
 
 
 class PlayerMenuView(MotherView):
-    def display(self):
-        print("Vous êtes sur la page des joueurs, que voulez-vous faire ?")
-        print("Option 1 : Créer un joueur")
-        print("Option 2 : Voir la liste des joueurs")
+    def display(self, tournament_player_list):
+        if tournament_player_list is None:
+            print("Aucun joueur selectionné dans le tournoi.")
+        else:
+            print("Voici les joeurs déjà présents dans le tournoi :")
+            for player in tournament_player_list:
+                print(f"{player.id} : {player.alias}")
+        self.print_choices()
         self.get_choice()
 
     def get_choice(self):
@@ -101,20 +106,36 @@ class PlayerMenuView(MotherView):
         if choice == "1":
             command = "ask_player_creation"
         elif choice == "2":
-            command = "display_players"
+            command = "select_player"
         else:
             command = "wrong_command"
         self.update({"name": command})
 
+    def print_choices(self):
+        print("Vous êtes dans le menu des joueurs, que voulez-vous faire ?")
+        print("Option 1 : Créer un joueur")
+        print("Option 2 : Sélectionner un joueur")
+
+
+class SelectPlayerView(MotherView):
+    def display(self, players):
+        for index in players:
+            print("Ci-dessous la liste des joeurs déjà enregistrés en base :")
+            print(f"{index.doc_id} : {index.alias()}")
+        self.get_choice()
+
+    def get_choice(self):
+        choice = input("Entrez le numéro du joueur choisi : ")
+        return choice
+
 
 class CreatePlayersView(MotherView):
     def display(self, number_of_players=8):
-        for players_needed in range(number_of_players):
+        for index in range(number_of_players):
             print("Entrez l'information du joueur ci dessous : ")
             player = self.ask_player_data()
-            self.set_context(f"player{players_needed}", player)
-            self.update("create_player")
-            self.show_created_player(player)
+            self.set_context(f"player{index}", player)
+        self.update("create_players")
         self.update("create_matchs")
 
     def ask_player_data(self):
@@ -122,7 +143,7 @@ class CreatePlayersView(MotherView):
             "first_name": input("Entrez le prénom du joueur : "),
             "last_name": input("Entrez le nom de famille du joueur : "),
             "date_of_birth": self.ask_player_date_of_birth(),
-            "sex": input("Entrez le sexe du joueur : "),
+            "sex": input("Entrez le sexe du joueur (h/f) : "),
             "rank": input("Entrez le rang du joueur : "),
         }
 

@@ -11,4 +11,5 @@ from .base import (
     ChooseMatchView,
     ModifyMatchView,
     PlayerMenuView,
+    SelectPlayerView,
 )
