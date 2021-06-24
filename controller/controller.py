@@ -1,15 +1,18 @@
 """Reprents the controller."""
 
-from view.base import SelectPlayerView
-from model import Player, Match, Tournament, player
+import datetime
 
-from faker import Faker
+from view.base import SelectPlayerView
+from model import Player, Match, Tournament
+
+from tinydb import TinyDB, Query
+import config
 
 from view import (
     MainMenu,
     CreateTournamentView,
     RetrieveTournamentView,
-    CreatePlayersView,
+    CreatePlayerView,
     CreateMatchView,
     ShowMatches,
     ChooseMatchView,
@@ -21,14 +24,6 @@ from view import (
 
 # todo récupérer les joueurs déjà créés lors de la création du tournoi
 # afficher la liste de joueurs en bdd et proposer de les ajouter via une selection
-# tant qu'il y a - de 8 joueurs continuer
-# créer une commande qui crée 8 joueurs random https://faker.readthedocs.io/en/master/
-
-# faker.date()
-# faker.name() first name et last name ?
-# random sex ?
-# random.randrange()
-# fake.profile()
 
 
 class Controller:
@@ -42,10 +37,15 @@ class Controller:
         self.tournament = None
 
     def run(self):
+        """Launch the program."""
+        if len(Player.list()) < 1:
+            Player.create_height_players()
+
         while self.running:
             self.view.display()
 
     def execute(self, command):
+        """Execute the given command."""
         name = command["name"]
         if name == "main_page":
             self.view = MainMenu(observer=self)
@@ -55,15 +55,19 @@ class Controller:
             self.tournament = Tournament(**self.context["tournament_data"])
         elif name == "retrieve_tournament":
             self.view = RetrieveTournamentView(observer=self)
+            self.view.display(Tournament.list())
+            self.tournament = Tournament.get(self.context["chosen_tournament"])
         elif name == "player_menu":
-            self.view = PlayerMenuView(observer=self)
+            self.view = PlayerMenuView(observer=self, players=self.tournament.players)
         elif name == "select_player":
-            self.view = SelectPlayerView(observer=self)
-        elif name == "ask_players_creation":
-            self.view = CreatePlayersView(observer=self)
-        elif name == "create_players":
-            Player.create_players(self.context, self.tournament)
-            self.tournament.save()
+            self.view = SelectPlayerView(observer=self, players=Player.list())
+            self.view.display()
+            self.tournament.players.append(Player.get(self.context["chosen_player"]))
+        elif name == "ask_player_creation":
+            self.view = CreatePlayerView(observer=self)
+            player = Player(*self.context["player_created"])
+            player.save()
+            self.tournament.players.append(player)
         elif name == "create_matchs":
             self.tournament.create_turn()
             self.view = CreateMatchView(observer=self, matches=self.tournament.rounds)
@@ -81,6 +85,7 @@ class Controller:
             self.view.wrong_command()
 
     def update_score(self, match, choice):
+        """Update the score."""
         if choice == 1:
             match.player_1.score += 1
         elif choice == 2:
@@ -90,6 +95,7 @@ class Controller:
             match.player_2.score += 0.5
 
     def next_rounds(self):
+        """Initialize the next rounds."""
         for match in self.tournament.matches:
             if self.tournament.matches.winner_alias:
                 pass

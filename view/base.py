@@ -1,7 +1,5 @@
 """Represents the view."""
 
-import datetime
-
 
 class MotherView:
     def __init__(self, observer):
@@ -29,7 +27,7 @@ class MotherView:
         year = int(input(year_text))
         month = int(input(month_text))
         day = int(input(day_text))
-        return datetime.date(year, month, day)
+        return f"{day}/{month}/{year}"
 
     def ask_for_choice(self):
         return input()
@@ -86,18 +84,26 @@ class CreateTournamentView(MotherView):
 
 
 class RetrieveTournamentView(MotherView):
-    def display(self):
-        print("Option en cours de développement.")
+    def display(self, tournaments):
+        print("Voici tous les tournois en base de données :")
+        for tournament in tournaments:
+            print(f"{tournament.doc_id} : {tournament.name}")
+        print("Sélectionnez le tournoi désiré en utilisant son chiffre :")
+        self.set_context("chosen_tournament", input())
 
 
 class PlayerMenuView(MotherView):
-    def display(self, tournament_player_list):
-        if tournament_player_list is None:
+    def __init__(self, observer, players):
+        super().__init__(observer)
+        self.players = players
+
+    def display(self):
+        if not self.players:
             print("Aucun joueur selectionné dans le tournoi.")
         else:
             print("Voici les joeurs déjà présents dans le tournoi :")
-            for player in tournament_player_list:
-                print(f"{player.id} : {player.alias}")
+            for player in self.players:
+                print(f"{player.doc_id} : {player.alias}")
         self.print_choices()
         self.get_choice()
 
@@ -118,25 +124,28 @@ class PlayerMenuView(MotherView):
 
 
 class SelectPlayerView(MotherView):
-    def display(self, players):
-        for index in players:
+    def __init__(self, observer, players):
+        super().__init__(observer)
+        self.players = players
+
+    def display(self):
+        for index in self.players:
             print("Ci-dessous la liste des joeurs déjà enregistrés en base :")
             print(f"{index.doc_id} : {index.alias()}")
-        self.get_choice()
+        player = self.get_choice()
+        self.set_context("chosen_player", player)
 
     def get_choice(self):
         choice = input("Entrez le numéro du joueur choisi : ")
         return choice
 
 
-class CreatePlayersView(MotherView):
-    def display(self, number_of_players=8):
-        for index in range(number_of_players):
-            print("Entrez l'information du joueur ci dessous : ")
-            player = self.ask_player_data()
-            self.set_context(f"player{index}", player)
-        self.update("create_players")
-        self.update("create_matchs")
+class CreatePlayerView(MotherView):
+    def display(self):
+        print("Entrez l'information du joueur ci dessous : ")
+        player = self.ask_player_data()
+        self.set_context("player_created", player)
+        self.update("player_menu")
 
     def ask_player_data(self):
         return {
@@ -191,8 +200,8 @@ class ChooseMatchView(MotherView):
 
     def display(self):
         print("Voici les matchs qu'il vous est possible de sélectionner : ")
-        for id, match in enumerate(self.matches):
-            print(f"Match n°{id} : {match.alias}")
+        for doc_id, match in enumerate(self.matches):
+            print(f"Match n°{doc_id} : {match.alias}")
         print(
             "Choisissez le chiffre du match à modifier, "
             "si vous voulez passer au prochain matchup n'entrez aucune valeur : "

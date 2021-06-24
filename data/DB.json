@@ -1,0 +1,68 @@
+{
+    "players": {
+        "1": {
+            "first_name": "Robert",
+            "last_name": "Ross",
+            "date_of_birth": "17/07/1934",
+            "sex": "M",
+            "rank": 3106,
+            "score": 0
+        },
+        "2": {
+            "first_name": "Carl",
+            "last_name": "Hayes",
+            "date_of_birth": "09/12/1953",
+            "sex": "M",
+            "rank": 1879,
+            "score": 0
+        },
+        "3": {
+            "first_name": "Dana",
+            "last_name": "Washington",
+            "date_of_birth": "30/03/1920",
+            "sex": "F",
+            "rank": 2818,
+            "score": 0
+        },
+        "4": {
+            "first_name": "Melissa",
+            "last_name": "Valentine",
+            "date_of_birth": "25/11/1991",
+            "sex": "F",
+            "rank": 2701,
+            "score": 0
+        },
+        "5": {
+            "first_name": "David",
+            "last_name": "Gregory",
+            "date_of_birth": "09/10/1938",
+            "sex": "M",
+            "rank": 3854,
+            "score": 0
+        },
+        "6": {
+            "first_name": "Megan",
+            "last_name": "Smith",
+            "date_of_birth": "06/01/2015",
+            "sex": "F",
+            "rank": 4690,
+            "score": 0
+        },
+        "7": {
+            "first_name": "Samantha",
+            "last_name": "Long",
+            "date_of_birth": "08/08/1933",
+            "sex": "F",
+            "rank": 1485,
+            "score": 0
+        },
+        "8": {
+            "first_name": "Lee",
+            "last_name": "Kelly",
+            "date_of_birth": "08/09/1977",
+            "sex": "M",
+            "rank": 4696,
+            "score": 0
+        }
+    }
+}

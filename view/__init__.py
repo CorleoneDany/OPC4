@@ -5,7 +5,7 @@ from .base import (
     MainMenu,
     CreateTournamentView,
     RetrieveTournamentView,
-    CreatePlayersView,
+    CreatePlayerView,
     CreateMatchView,
     ShowMatches,
     ChooseMatchView,
