@@ -8,7 +8,7 @@ class MotherView:
     def wrong_command(self):
         print("Mauvaise commande entrée.")
 
-    def update(self, command):
+    def execute(self, command):
         return self.observer.execute(command)
 
     def set_context(self, key, value):
@@ -48,7 +48,7 @@ class MainMenu(MotherView):
             command = "retrieve_tournament"
         else:
             command = "wrong_command"
-        self.update({"name": command})
+        self.execute({"name": command})
 
 
 class CreateTournamentView(MotherView):
@@ -57,7 +57,6 @@ class CreateTournamentView(MotherView):
         print("Entrez les informations du tournoi ci dessous : ")
         tournament_data = self.get_tournament_data()
         self.set_context("tournament_data", tournament_data)
-        self.update({"name": "player_menu"})
 
     def get_tournament_data(self):
         return {
@@ -81,6 +80,9 @@ class CreateTournamentView(MotherView):
             "Entrez le mois de fin sous ce format mm : ",
             "Entrez le jour du fin sous ce format dd : ",
         )
+
+    def display_player_menu(self):
+        self.execute({"name": "player_menu"})
 
 
 class RetrieveTournamentView(MotherView):
@@ -115,7 +117,7 @@ class PlayerMenuView(MotherView):
             command = "select_player"
         else:
             command = "wrong_command"
-        self.update({"name": command})
+        self.execute({"name": command})
 
     def print_choices(self):
         print("Vous êtes dans le menu des joueurs, que voulez-vous faire ?")
@@ -129,9 +131,9 @@ class SelectPlayerView(MotherView):
         self.players = players
 
     def display(self):
+        print("Ci-dessous la liste des joeurs déjà enregistrés en base :")
         for index in self.players:
-            print("Ci-dessous la liste des joeurs déjà enregistrés en base :")
-            print(f"{index.doc_id} : {index.alias()}")
+            print(f"{index.doc_id} : {index.alias}")
         player = self.get_choice()
         self.set_context("chosen_player", player)
 
@@ -145,7 +147,7 @@ class CreatePlayerView(MotherView):
         print("Entrez l'information du joueur ci dessous : ")
         player = self.ask_player_data()
         self.set_context("player_created", player)
-        self.update("player_menu")
+        self.execute("player_menu")
 
     def ask_player_data(self):
         return {
@@ -208,7 +210,7 @@ class ChooseMatchView(MotherView):
         )
         choice = self.get_choice()
         self.set_context("chosen_match", self.matches[choice])
-        self.update("modify_match")
+        self.execute("modify_match")
 
     def get_choice(self):
         return int(input())

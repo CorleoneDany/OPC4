@@ -14,19 +14,14 @@ class Tournament(DB):
     table = TinyDB(config.DB_PATH).table("tournament")
 
     def __init__(
-        self,
-        name,
-        location,
-        start_date: str,
-        ending_date: str,
-        desc,
+        self, name, location, start_date: str, ending_date: str, desc, doc_id=None
     ):
         """Init class with attributes."""
-        self.doc_id = None
+        self.doc_id = doc_id
         self.name = name
         self.location = location
         self.max_turns = 4
-        self.turns = []
+        self.turns = {}
         self.players = []
         self.matchs = []
         self.start_date = start_date
@@ -73,8 +68,9 @@ class Tournament(DB):
             self.matchs.append(Match(self.first_team, second_team))
 
     def create_next_turn(self):
-        """Create the next matche."""
+        """Create the next match."""
         # ajouter les matchs dans les turns avant de les effacer
+
         self.matchs.clear()
         sorted_first_team = sorted(self.first_team, key=lambda i: i["score"])
         sorted_second_team = sorted(self.second_team, key=lambda i: i["score"])

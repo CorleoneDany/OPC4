@@ -53,6 +53,7 @@ class Controller:
             self.view = CreateTournamentView(observer=self)
             self.view.display()
             self.tournament = Tournament(**self.context["tournament_data"])
+            self.view.display_player_menu()
         elif name == "retrieve_tournament":
             self.view = RetrieveTournamentView(observer=self)
             self.view.display(Tournament.list())
