@@ -48,7 +48,10 @@ class Controller:
             self.view.display(Tournament.list())
             self.tournament = Tournament.get(self.context["chosen_tournament"])
             if self.tournament.turn_finished():
-                self.execute({"name": "create_matchs"})
+                if self.tournament.is_finished():
+                    self.execute({"name": "end_tournament"})
+                else:
+                    self.execute({"name": "create_matchs"})
             else:
                 self.execute({"name": "choose_match"})
         elif name == "player_menu":
