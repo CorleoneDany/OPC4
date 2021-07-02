@@ -1,4 +1,7 @@
 """Represents the view."""
+import os
+
+from pprint import pprint
 
 
 class MotherView:
@@ -24,21 +27,35 @@ class MotherView:
         pass
 
     def ask_for_date(self, year_text, month_text, day_text):
-        year = int(input(year_text))
-        month = int(input(month_text))
-        day = int(input(day_text))
+        year = input(year_text)
+        month = input(month_text)
+        day = input(day_text)
         return f"{day}/{month}/{year}"
 
     def ask_for_choice(self):
         return input()
 
+    def clear(self):
+        os.system("cls" if os.name == "nt" else "clear")
+
 
 class MainMenu(MotherView):
+    def __init__(self, observer, tournaments):
+        super().__init__(observer)
+        self.tournaments = tournaments
+
     def display(self):
-        print("Bienvenue sur Centre Echecs, que voulez-vous faire ?")
-        print("Option 1 : Créer un tournoi")
-        print("Option 2 : Reprendre un tournoi")
-        self.get_choice()
+        if self.tournaments:
+            print("Bienvenue sur Centre Echecs, que voulez-vous faire ?")
+            print("Option 1 : Créer un tournoi")
+            print("Option 2 : Reprendre un tournoi")
+            self.get_choice()
+        else:
+            print(
+                "Bienvenu sur Centre Echecs\n"
+                "Aucun tournoi enregistré en base, envoi vers la création de tournoi"
+            )
+            self.execute({"name": "create_tournament"})
 
     def get_choice(self):
         choice = input("Entrez le numéro de l'option choisie : ")
@@ -53,7 +70,6 @@ class MainMenu(MotherView):
 
 class CreateTournamentView(MotherView):
     def display(self):
-        # demander la création ou le chargement des joueurs via la liste en bdd
         print("Entrez les informations du tournoi ci dessous : ")
         tournament_data = self.get_tournament_data()
         self.set_context("tournament_data", tournament_data)
@@ -87,11 +103,18 @@ class CreateTournamentView(MotherView):
 
 class RetrieveTournamentView(MotherView):
     def display(self, tournaments):
-        print("Voici tous les tournois en base de données :")
-        for tournament in tournaments:
-            print(f"{tournament.doc_id} : {tournament.name}")
-        print("Sélectionnez le tournoi désiré en utilisant son chiffre :")
-        self.set_context("chosen_tournament", input())
+        if tournaments:
+            print("Voici tous les tournois en base de données :")
+            for tournament in tournaments:
+                print(f"{tournament.doc_id} : {tournament.name}")
+            print("Sélectionnez le tournoi désiré en utilisant son chiffre :")
+            self.set_context("chosen_tournament", int(input()))
+        else:
+            print(
+                "Aucun tournoi enregistré en base de données, retour à la "
+                "création du tournoi."
+            )
+            self.execute({"name": "create_tournament"})
 
 
 class PlayerMenuView(MotherView):
@@ -126,19 +149,34 @@ class PlayerMenuView(MotherView):
 
 
 class SelectPlayerView(MotherView):
-    def __init__(self, observer, players):
+    def __init__(self, observer, players, tournament_players):
         super().__init__(observer)
         self.players = players
+        self.tournament_players = tournament_players
 
     def display(self):
         print("Ci-dessous la liste des joeurs déjà enregistrés en base :")
-        for index in self.players:
-            print(f"{index.doc_id} : {index.alias}")
-        player = self.get_choice()
-        self.set_context("chosen_player", player)
+        while len(self.tournament_players) < 8:
+            for index in self.players:
+                # si un joueur est déjà selectionné dans le tournoi le préciser
+                print(f"{index.doc_id} : {index.alias}")
+            player = self.get_choice()
+            self.set_context("chosen_player", player)
+            self.execute({"name": "add_player"})
+            choice = input("Sélectionner un autre joueur ? Y/N : ")
+            if choice == "N":
+                self.execute({"name": "player_menu"})
+
+        print("8 joueurs ont été séléctionnés, les matchs vont être créés.")
+        self.execute({"name": "create_matchs"})
 
     def get_choice(self):
-        choice = input("Entrez le numéro du joueur choisi : ")
+        choice = None
+        while choice is None:
+            try:
+                choice = int(input("Entrez le numéro du joueur choisi : "))
+            except ValueError:
+                pass
         return choice
 
 
@@ -146,8 +184,9 @@ class CreatePlayerView(MotherView):
     def display(self):
         print("Entrez l'information du joueur ci dessous : ")
         player = self.ask_player_data()
-        self.set_context("player_created", player)
-        self.execute("player_menu")
+        self.set_context("player_to_create", player)
+        if self.get_choice() == "N":
+            self.execute({"name": "player_menu"})
 
     def ask_player_data(self):
         return {
@@ -165,6 +204,9 @@ class CreatePlayerView(MotherView):
             "Entrez le jour de naissance du joueur : ",
         )
 
+    def get_choice(self):
+        return input("Créer un autre joueur ? Y/N : ")
+
     def show_created_player(self, player):
         print(f"Joueur {player.alias} créé.")
 
@@ -176,23 +218,12 @@ class CreateMatchView(MotherView):
 
     def display(self):
         for match in self.matches:
-            print(
-                f"Le match n°{self.match.match_id} opposant {match.player_1.alias}"
-                f" et {match.player_2.alias} à été créé."
-            )
-
-
-class ShowMatches(MotherView):
-    def __init__(self, observer, matches):
-        super().__init__(observer)
-        self.matches = matches
-
-    def display(self):
-        for match in self.matches:
-            print(
-                f"Match n°{match.match_id} : {match.player_1_alias}"
-                f" contre {match.player_2_alias}."
-            )
+            if match.winner_alias is None:
+                print(
+                    f"Le match n°{match.doc_id} opposant {match.player_1.alias}"
+                    f" et {match.player_2.alias} à été créé."
+                )
+        self.execute({"name": "choose_match"})
 
 
 class ChooseMatchView(MotherView):
@@ -202,15 +233,12 @@ class ChooseMatchView(MotherView):
 
     def display(self):
         print("Voici les matchs qu'il vous est possible de sélectionner : ")
-        for doc_id, match in enumerate(self.matches):
-            print(f"Match n°{doc_id} : {match.alias}")
-        print(
-            "Choisissez le chiffre du match à modifier, "
-            "si vous voulez passer au prochain matchup n'entrez aucune valeur : "
-        )
-        choice = self.get_choice()
-        self.set_context("chosen_match", self.matches[choice])
-        self.execute("modify_match")
+        for match in self.matches:
+            if match.winner_alias is None:
+                print(f"Match n°{match.doc_id} : {match.alias}")
+        print("Choisissez le chiffre du match à modifier : ")
+        self.set_context("chosen_match", self.get_choice())
+        self.execute({"name": "modify_match"})
 
     def get_choice(self):
         return int(input())
@@ -232,3 +260,17 @@ class ModifyMatchView(MotherView):
 
     def get_choice(self):
         return int(input())
+
+    def change_match(self):
+        self.execute({"name": "choose_match"})
+
+
+class EndTournamentView(MotherView):
+    def __init__(self, observer, players):
+        super().__init__(observer)
+        self.players = players
+
+    def display(self):
+        print("Le tournoi est terminé, voici les résultats des joueurs : ")
+        for index, player in enumerate(self.players):
+            print(f"{index} : {player.alias} avec {player.score}")

@@ -1,6 +1,6 @@
-"""Represents the database"""
+"""Represent the database."""
 
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, table
 import config
 
 
@@ -29,10 +29,19 @@ class DB:
         """Return the deserialized object."""
         pass
 
+    @classmethod
+    def drop(cls):
+        """Drop the data in the object's table."""
+        cls.table.drop_table(table)
+
     def save(self):
         """Save the object in the database."""
         document = self.serialized()
         if self.doc_id:
-            self.table.execute(document, doc_ids=[self.doc_id])
+            self.table.update(document, doc_ids=[self.doc_id])
         else:
             self.doc_id = self.table.insert(document)
+
+    def return_id(self):
+        """Return the document's ID."""
+        return self.doc_id

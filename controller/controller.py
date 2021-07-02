@@ -1,37 +1,26 @@
 """Reprents the controller."""
 
-import datetime
-
-from view.base import SelectPlayerView
 from model import Player, Match, Tournament
-
-from tinydb import TinyDB, Query
-import config
-
 from view import (
     MainMenu,
     CreateTournamentView,
     RetrieveTournamentView,
     CreatePlayerView,
     CreateMatchView,
-    ShowMatches,
     ChooseMatchView,
     ModifyMatchView,
     PlayerMenuView,
     SelectPlayerView,
+    EndTournamentView,
 )
 
 
-# todo récupérer les joueurs déjà créés lors de la création du tournoi
-# afficher la liste de joueurs en bdd et proposer de les ajouter via une selection
-
-
 class Controller:
-    """Reprents the controller."""
+    """Represents the controller."""
 
     def __init__(self):
         """Init class with attributes."""
-        self.view = MainMenu(observer=self)
+        self.view = MainMenu(observer=self, tournaments=Tournament.list())
         self.running = True
         self.context = {}
         self.tournament = None
@@ -58,47 +47,50 @@ class Controller:
             self.view = RetrieveTournamentView(observer=self)
             self.view.display(Tournament.list())
             self.tournament = Tournament.get(self.context["chosen_tournament"])
+            if self.tournament.turn_finished():
+                self.execute({"name": "create_matchs"})
+            else:
+                self.execute({"name": "choose_match"})
         elif name == "player_menu":
             self.view = PlayerMenuView(observer=self, players=self.tournament.players)
         elif name == "select_player":
-            self.view = SelectPlayerView(observer=self, players=Player.list())
-            self.view.display()
+            self.view = SelectPlayerView(
+                observer=self,
+                players=Player.list(),
+                tournament_players=self.tournament.players,
+            )
+        elif name == "add_player":
             self.tournament.players.append(Player.get(self.context["chosen_player"]))
         elif name == "ask_player_creation":
             self.view = CreatePlayerView(observer=self)
-            player = Player(*self.context["player_created"])
+            self.view.display()
+            player = Player(**self.context["player_to_create"])
             player.save()
             self.tournament.players.append(player)
         elif name == "create_matchs":
             self.tournament.create_turn()
-            self.view = CreateMatchView(observer=self, matches=self.tournament.rounds)
-        elif name == "select_match":
-            self.view = ChooseMatchView(observer=self, matches=self.tournament.rounds)
+            self.tournament.save()
+            self.view = CreateMatchView(observer=self, matches=self.tournament.matchs)
+        elif name == "choose_match":
+            self.view = ChooseMatchView(observer=self, matches=self.tournament.matchs)
         elif name == "modify_match":
             self.view = ModifyMatchView(
-                observer=self, match=self.context["chosen_match"]
+                observer=self,
+                match=self.tournament.get_match(self.context["chosen_match"]),
             )
-            self.update_score(
-                self.context["chosen_match"], self.context["chosen_winner"]
+            self.view.display()
+            self.view.match.finish(self.context["chosen_winner"])
+            if self.tournament.turn_finished():
+                if self.tournament.is_finished():
+                    self.execute({"name": "end_tournament"})
+                else:
+                    self.execute({"name": "create_matchs"})
+            else:
+                self.view.change_match()
+        elif name == "end_tournament":
+            self.tournament.save()
+            self.view = EndTournamentView(
+                observer=self, players=self.tournament.get_players_by_score()
             )
-            self.context["chosen_winner"] = None
         elif name == "wrong_command":
             self.view.wrong_command()
-
-    def update_score(self, match, choice):
-        """Update the score."""
-        if choice == 1:
-            match.player_1.score += 1
-        elif choice == 2:
-            match.player_2.score += 1
-        elif choice:
-            match.player_1.score += 0.5
-            match.player_2.score += 0.5
-
-    def next_rounds(self):
-        """Initialize the next rounds."""
-        for match in self.tournament.matches:
-            if self.tournament.matches.winner_alias:
-                pass
-            else:
-                self.view = ChooseMatchView(observer=self)

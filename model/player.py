@@ -1,10 +1,8 @@
-"""Represents the player"""
-
-import datetime
+"""Represents the player."""
 
 from random import randint
 
-from tinydb import TinyDB, Query, table
+from tinydb import TinyDB
 
 from faker import Faker
 
@@ -13,7 +11,7 @@ import config
 
 
 class Player(DB):
-    """Represents the player"""
+    """Represents the player."""
 
     table = TinyDB(config.DB_PATH).table("players")
 
@@ -21,11 +19,12 @@ class Player(DB):
         self,
         first_name,
         last_name,
-        date_of_birth: str,
+        date_of_birth,
         sex,
-        rank,
+        rank=0,
         score=0,
         doc_id=None,
+        players_faced=[],
     ):
         """Init class with attributes."""
         self.doc_id = doc_id
@@ -33,9 +32,9 @@ class Player(DB):
         self.last_name = last_name
         self.date_of_birth = date_of_birth
         self.sex = sex
-        self.rank = rank
-        self.score = score
-        self.players_faced = []
+        self.rank = int(rank) or 0
+        self.score = int(score) or 0
+        self.players_faced = players_faced
 
     @property
     def alias(self):
@@ -51,6 +50,7 @@ class Player(DB):
             "sex": self.sex,
             "rank": self.rank,
             "score": self.score,
+            "players_faced": self.players_faced,
         }
 
     @classmethod
@@ -61,12 +61,19 @@ class Player(DB):
         return player
 
     @classmethod
+    def get_many_players(cls, players_id):
+        players = []
+        for player_id in players_id:
+            players.append(cls.get(player_id))
+        return players
+
+    @classmethod
     def create_height_players(self):
         """Create 8 random players in the database."""
         for _ in range(8):
             faker = Faker()
             profile = faker.profile()
-            first_name, last_name = profile["name"].split()
+            first_name, last_name = profile["name"].split(None, 1)
             params = {
                 "first_name": first_name,
                 "last_name": last_name,

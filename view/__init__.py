@@ -7,9 +7,9 @@ from .base import (
     RetrieveTournamentView,
     CreatePlayerView,
     CreateMatchView,
-    ShowMatches,
     ChooseMatchView,
     ModifyMatchView,
     PlayerMenuView,
     SelectPlayerView,
+    EndTournamentView,
 )
