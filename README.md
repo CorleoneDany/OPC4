@@ -15,4 +15,4 @@ Pour ce projet nous utilisons 4 modèles :
 
 Pour lancer le projet, il suffira d'avoir python et git installé, un script est fournit pour créer l'environnement virtuel du projet et télécharger toutes les dépendances automatiquement.
 
-En premier lieu il faudra ouvrir le fichier V-env.sh qui installera l'environnement virtuel du projet automatiquement (dépendances incluses) puis ouvir l'application via __main__.py
+En premier lieu il faudra ouvrir le fichier V-env.sh qui installera l'environnement virtuel du projet automatiquement (dépendances incluses) puis ouvir l'application via launch.cmd
