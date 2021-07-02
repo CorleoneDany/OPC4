@@ -1,8 +1,6 @@
 """Represents the view."""
 import os
 
-from pprint import pprint
-
 
 class MotherView:
     def __init__(self, observer):
@@ -52,7 +50,7 @@ class MainMenu(MotherView):
             self.get_choice()
         else:
             print(
-                "Bienvenu sur Centre Echecs\n"
+                "Bienvenue sur Centre Echecs\n"
                 "Aucun tournoi enregistré en base, envoi vers la création de tournoi"
             )
             self.execute({"name": "create_tournament"})

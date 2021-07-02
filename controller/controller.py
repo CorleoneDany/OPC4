@@ -94,3 +94,8 @@ class Controller:
             )
         elif name == "wrong_command":
             self.view.wrong_command()
+
+
+# tester le cas ou l'on charge un tournoi déjà terminé
+
+# flake8 --format=html --htmldir=flake8-rapport
