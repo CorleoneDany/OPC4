@@ -62,6 +62,7 @@ class Player(DB):
 
     @classmethod
     def get_many_players(cls, players_id):
+        """Get many players from a list of ids."""
         players = []
         for player_id in players_id:
             players.append(cls.get(player_id))
