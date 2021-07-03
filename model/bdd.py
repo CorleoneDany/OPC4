@@ -7,7 +7,7 @@ import config
 class DB:
     """Represent the database."""
 
-    table = TinyDB(config.DB_PATH)
+    table = TinyDB(config.DB_PATH).table("")
 
     @classmethod
     def get(cls, doc_id):

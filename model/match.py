@@ -47,6 +47,7 @@ class Match(DB):
 
     @classmethod
     def get_many_matchs(cls, matchs_id, players):
+        """Get many matches from a list of ids."""
         matchs = []
         for match_id in matchs_id:
             matchs.append(cls.get(match_id, players))
@@ -54,6 +55,7 @@ class Match(DB):
 
     @classmethod
     def get(cls, doc_id, players):
+        """Get a match with its id."""
         match = cls.table.get(doc_id=doc_id)
         for player in players:
             if match["player_1"] == player.doc_id:

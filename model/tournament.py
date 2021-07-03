@@ -119,12 +119,14 @@ class Tournament(DB):
         return players_ids
 
     def get_first_team_ids(self):
+        """Get all ids from the first team."""
         player_ids = []
         for player in self.first_team:
             player_ids.append(player.return_id())
         return player_ids
 
     def get_second_team_ids(self):
+        """Get all ids from the second team."""
         player_ids = []
         for player in self.second_team:
             player_ids.append(player.return_id())
@@ -165,6 +167,3 @@ class Tournament(DB):
         matchs = Match.get_many_matchs(tournament["matchs"], tournament["players"])
         tournament["matchs"] = matchs
         return cls.deserialized(tournament)
-
-        # Les get des matchs ne fonctionnent toujours pas, trouver un moyen
-        # de get les matchs via une liste
