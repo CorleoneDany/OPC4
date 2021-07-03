@@ -4,3 +4,4 @@ __*
 !.gitignore
 .vscode
 .venv
+flake-report

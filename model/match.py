@@ -4,7 +4,6 @@ from tinydb import TinyDB
 
 
 from .bdd import DB
-from .player import Player
 import config
 
 
