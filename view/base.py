@@ -186,23 +186,34 @@ class SelectPlayerView(MotherView):
         super().__init__(observer)
         self.players = players
         self.tournament_players = tournament_players
+        self.players_ids = Player.return_many_ids(self.players)
+        self.tournament_players_ids = []
+        self.choice = True
 
     def display(self):
         """Print the players's selection's menu."""
-        print("Ci-dessous la liste des joeurs déjà enregistrés en base :")
-        while len(self.tournament_players) < 8:
-            for index in self.players:
-                # si un joueur est déjà selectionné dans le tournoi le préciser
-                print(f"{index.doc_id} : {index.alias}")
+        while len(self.tournament_players) < 8 and self.choice == True:
+            self.tournament_players_ids = Player.return_many_ids(
+                self.tournament_players
+            )
+            print("Ci-dessous la liste des joueurs que vous pouvez sélectionner :")
+            for player in self.players:
+                if player.doc_id not in self.tournament_players_ids:
+                    print(f"{player.doc_id} : {player.alias}")
             player = self.get_choice()
             self.set_context("chosen_player", player)
             self.execute({"name": "add_player"})
-            choice = input("Sélectionner un autre joueur ? Y/N : ")
-            if choice == "N":
-                self.execute({"name": "player_menu"})
+            self.select_another_player()
+            if len(self.tournament_players) == 8:
+                print("8 joueurs ont été séléctionnés, les matchs vont être créés.")
+                self.execute({"name": "create_matchs"})
 
-        print("8 joueurs ont été séléctionnés, les matchs vont être créés.")
-        self.execute({"name": "create_matchs"})
+    def select_another_player(self):
+        """Know if the player want to select another player."""
+        choice = input("Sélectionner un autre joueur ? Y/N : ")
+        if choice == "N" or "n":
+            self.execute({"name": "player_menu"})
+            self.choice = False
 
     def get_choice(self):
         """Get the user's choice."""
@@ -211,7 +222,10 @@ class SelectPlayerView(MotherView):
             try:
                 choice = int(input("Entrez le numéro du joueur choisi : "))
             except ValueError:
-                pass
+                print(
+                    "Vous avez entré une mauvaise valeur, nous vous invitons"
+                    " à réessayer"
+                )
         return choice
 
 
@@ -309,13 +323,22 @@ class ModifyMatchView(MotherView):
             f"Vous avez sélectionné le match {self.match.alias}, nous vous invitons à "
             f"renseigner le vainqueur de ce dernier, Joueur 1 "
             f"({self.match.player_1.alias}) ou Joueur 2 ({self.match.player_2.alias})"
-            "par son chiffre, dans le cas d'un match nul laisser la valeur à vide : \n"
+            "par son chiffre, dans le cas d'un match rentrez un 0 : \n"
         )
         self.set_context("chosen_winner", self.get_choice())
 
     def get_choice(self):
         """Get the user's choice."""
-        return int(input())
+        choice = None
+        while choice is None or choice != 0 or 1 or 2:
+            try:
+                choice = int(input())
+            except ValueError:
+                print(
+                    "Vous avez entré une mauvaise valeur, nous vous invitons"
+                    " à réessayer"
+                )
+        return choice
 
     def change_match(self):
         """Change the selected match."""
@@ -335,3 +358,4 @@ class EndTournamentView(MotherView):
         print("Le tournoi est terminé, voici les résultats des joueurs : ")
         for index, player in enumerate(self.players):
             print(f"{index} : {player.alias} avec {player.score}")
+        input("Appuyez sur Entrée pour fermer le programme.")

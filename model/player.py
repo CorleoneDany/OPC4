@@ -84,3 +84,11 @@ class Player(DB):
             }
             player = Player(**params)
             player.save()
+
+    @classmethod
+    def return_many_ids(cls, players):
+        """Return a list of ids from a players list."""
+        ids = []
+        for player in players:
+            ids.append(player.doc_id)
+        return ids

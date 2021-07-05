@@ -73,7 +73,7 @@ class Match(DB):
         elif winner == 2:
             self.player_2.score += 1
             self.winner_alias = self.player_2.alias
-        elif winner:
+        elif winner == 0:
             self.player_1.score += 0.5
             self.player_2.score += 0.5
             self.winner_alias = "Match nul"

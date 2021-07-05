@@ -95,8 +95,22 @@ class Controller:
             self.view = EndTournamentView(
                 observer=self, players=self.tournament.get_players_by_score()
             )
+            self.running = False
         elif name == "wrong_command":
             self.view.wrong_command()
 
 
-# flake8 --format=html --htmldir=flake8-rapport
+# bug lors de sélection des joueurs si non boucle infinie
+# resolu en ajoutant un booléen qui casse la boucle si le choix est en non puis renvoie
+# au menu des joueurs
+
+# boucle infinie lors de fin du tournoi
+# le programme se ferme désormais a la fin du tournoi, avant le display tournait
+# en boucle
+
+# si winner de player était une chaine vide le programme crash
+# désormais pour mettre un match nul je demande un int à 0
+
+# amelioration
+# les joueurs déjà sélectionnés dans le tournoi ne sont plus affichés sur l'écran
+# de chargement
